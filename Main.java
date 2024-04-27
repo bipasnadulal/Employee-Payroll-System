@@ -6,10 +6,12 @@ abstract class Employee{
 
     private String name;
     private int id;
+    private String employementStatus;
 
-    public Employee(String name, int id){
+    public Employee(String name, int id, String employementStatus){
         this.name=name;
         this.id=id;
+        this.employementStatus=employementStatus;
     }
 
     public String getName(){
@@ -20,18 +22,22 @@ abstract class Employee{
         return id;
     }
 
+    public String getEmpStatus(){
+        return employementStatus;
+    }
+
     public abstract double calculateSalary();
 
     @Override
     public String toString(){
-        return "Employee[name="+name+", id="+id+",salary="+calculateSalary()+"]";
+        return "Employee[name="+name+", id="+id+",salary="+calculateSalary()+", Employement Status="+employementStatus+"]";
     }
 }
 
 class FullTimeEmployee extends Employee{
     private double monthlySalary;
-    public FullTimeEmployee(String name, int id, double monthlySalary){
-        super(name , id);
+    public FullTimeEmployee(String name, int id,  double monthlySalary, String employementStatus){
+        super(name , id, employementStatus);
         this.monthlySalary=monthlySalary;
     }
 
@@ -44,8 +50,8 @@ class FullTimeEmployee extends Employee{
 class PartTimeEmployee extends Employee{
     private int hoursWorked;
     private double hourlyRate;
-    public PartTimeEmployee(String name, int id, int hoursWorked, double hourlyRate){
-        super(name, id);
+    public PartTimeEmployee(String name, int id, int hoursWorked, double hourlyRate, String employementStatus){
+        super(name, id, employementStatus);
         this.hoursWorked=hoursWorked;
         this.hourlyRate=hourlyRate;
     }
@@ -95,7 +101,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int choice;
         do{
-            System.out.println("Enter your choice:\n 1. Add full time employee. \n2. Add part time Employee \n3. Remove employee \n4.Display Employee \n5.Exit");
+            System.out.println("Enter your choice:\n1. Add full time employee. \n2. Add part time Employee \n3. Remove employee \n4. Display Employee \n5. Exit");
             choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -136,25 +142,49 @@ public class Main {
     public static FullTimeEmployee geFullTimeEmployee(Scanner scanner){
         System.out.println("Enter employee name: ");
         String empName=scanner.nextLine();
-        System.out.println("Enter employee id: ");
-        int empId=scanner.nextInt();
+        int empId;
+        while(true){
+            System.out.println("Enter employee id (must be an integer): ");
+            try{
+                empId=Integer.parseInt(scanner.nextLine());
+                break;
+            }
+            catch(NumberFormatException e){
+                System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+            }
+        }
         System.out.println("Enter employee monthly salary: ");
         double monthlySalary=scanner.nextDouble();
+        scanner.nextLine();
+        System.out.println("Enter employement status of employee: ");
+        String empStatus=scanner.nextLine();
     
-        return new FullTimeEmployee(empName, empId, monthlySalary);
+        return new FullTimeEmployee(empName, empId, monthlySalary, empStatus);
     }
     
     public static PartTimeEmployee getPartTimeEmployee(Scanner scanner){
         System.out.println("Enter employee name: ");
         String empName=scanner.nextLine();
-        System.out.println("Enter employee id: ");
-        int empId=scanner.nextInt();
+        int empId;
+        while(true){
+            System.out.println("Enter employee id (must be an integer): ");
+            try{
+                empId=Integer.parseInt(scanner.nextLine());
+                break;
+            }
+            catch(NumberFormatException e){
+                System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+            }
+        }
         System.out.println("Enter hours worked: ");
         int hoursWorked=scanner.nextInt();
         System.out.println("Enter hourly rate: ");
         double hourlyRate=scanner.nextDouble();
+        scanner.nextLine();
+        System.out.println("Enter employement status of employee: ");
+        String empStatus=scanner.nextLine();
     
-        return new PartTimeEmployee(empName, empId, hoursWorked, hourlyRate);
+        return new PartTimeEmployee(empName, empId, hoursWorked, hourlyRate, empStatus);
     }
 }
 
