@@ -29,9 +29,11 @@ abstract class Employee{
     public abstract double calculateSalary();
 
     @Override
-    public String toString(){
-        return "Employee[name="+name+", id="+id+",salary="+calculateSalary()+", Employement Status="+employementStatus+"]";
-    }
+    public String toString() {
+        return String.format("| %-10s | %-10d | %-10.2f | %-20s |", getName(), getId(), calculateSalary(), getEmpStatus());
+}
+
+    
 }
 
 class FullTimeEmployee extends Employee{
@@ -87,11 +89,36 @@ class PayrollSystem{
         }
 
         }
-        public void displayEmployees(){
-            for(Employee employee : employee_list){
-                System.out.println(employee);
+        
+
+        public void displayEmployees() {
+            int nameWidth = 10; // Minimum width for name column
+            int idWidth = 10; // Minimum width for ID column
+            int salaryWidth = 10; // Minimum width for salary column
+            int statusWidth = 20; // Minimum width for status column
+            
+            // Calculate maximum width for each column based on employee data
+            for (Employee employee : employee_list) {
+                nameWidth = Math.max(nameWidth, employee.getName().length());
+                idWidth = Math.max(idWidth, String.valueOf(employee.getId()).length());
+                salaryWidth = Math.max(salaryWidth, String.valueOf(employee.calculateSalary()).length());
+                statusWidth = Math.max(statusWidth, employee.getEmpStatus().length());
             }
+        
+            // Print table header
+            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
+            System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"s | %-"+salaryWidth+"s | %-"+statusWidth+"s |\n", "Name", "ID", "Salary", "Employment Status");
+            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
+        
+            // Print employee data
+            for (Employee employee : employee_list) {
+                System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"d | %-"+salaryWidth+".2f | %-"+statusWidth+"s |\n", employee.getName(), employee.getId(), employee.calculateSalary(), employee.getEmpStatus());
+            }
+        
+            // Print bottom border
+            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
         }
+        
 }
  
 
@@ -187,7 +214,6 @@ public class Main {
         return new PartTimeEmployee(empName, empId, hoursWorked, hourlyRate, empStatus);
     }
 }
-
 
 
 
