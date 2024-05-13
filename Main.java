@@ -65,7 +65,7 @@ class PartTimeEmployee extends Employee{
 }
 
 class PayrollSystem{
-    private ArrayList<Employee> employee_list;
+    public ArrayList<Employee> employee_list;
 
     public PayrollSystem(){
         employee_list=new ArrayList<>();
@@ -73,6 +73,7 @@ class PayrollSystem{
 
     public void AddEmployee(Employee employee){
         employee_list.add(employee);
+        System.out.println("Employee added successfully.");
     }
 
     public void RemoveEmployee(int id){
@@ -134,12 +135,12 @@ public class Main {
 
             switch(choice){
                 case 1:
-                    FullTimeEmployee FTemployee = geFullTimeEmployee(scanner);
+                    FullTimeEmployee FTemployee = geFullTimeEmployee(scanner, payrollSystem);
                     payrollSystem.AddEmployee(FTemployee);
                     break;
                 
                 case 2:
-                    PartTimeEmployee PTemployee=getPartTimeEmployee(scanner);
+                    PartTimeEmployee PTemployee=getPartTimeEmployee(scanner, payrollSystem);
                     payrollSystem.AddEmployee(PTemployee);
                     break;
                 
@@ -166,20 +167,32 @@ public class Main {
         while(choice!=5);
     }
 
-    public static FullTimeEmployee geFullTimeEmployee(Scanner scanner){
+    public static FullTimeEmployee geFullTimeEmployee(Scanner scanner, PayrollSystem payrollSystem){
         System.out.println("Enter employee name: ");
         String empName=scanner.nextLine();
         int empId;
-        while(true){
-            System.out.println("Enter employee id (must be an integer): ");
-            try{
-                empId=Integer.parseInt(scanner.nextLine());
-                break;
+        boolean idExists;
+        do{
+            idExists=false;
+            while(true){
+                System.out.println("Enter employee id (must be an integer): ");
+                try{
+                    empId=Integer.parseInt(scanner.nextLine());
+                    break;
+                }
+                catch(NumberFormatException e){
+                    System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+                }
             }
-            catch(NumberFormatException e){
-                System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+            for(Employee emp:payrollSystem.employee_list){
+                if(emp.getId()==empId){
+                    idExists=true;
+                    System.out.println("Employee with ID " + empId + " already exists. \nPlease enter different ID.");
+                    break;
+                }
             }
-        }
+        }while(idExists);
+       
         System.out.println("Enter employee monthly salary: ");
         double monthlySalary=scanner.nextDouble();
         scanner.nextLine();
@@ -189,20 +202,31 @@ public class Main {
         return new FullTimeEmployee(empName, empId, monthlySalary, empStatus);
     }
     
-    public static PartTimeEmployee getPartTimeEmployee(Scanner scanner){
+    public static PartTimeEmployee getPartTimeEmployee(Scanner scanner, PayrollSystem payrollSystem){
         System.out.println("Enter employee name: ");
         String empName=scanner.nextLine();
         int empId;
-        while(true){
-            System.out.println("Enter employee id (must be an integer): ");
-            try{
-                empId=Integer.parseInt(scanner.nextLine());
-                break;
+        boolean idExists;
+        do{
+            idExists=false;
+            while(true){
+                System.out.println("Enter employee id (must be an integer): ");
+                try{
+                    empId=Integer.parseInt(scanner.nextLine());
+                    break;
+                }
+                catch(NumberFormatException e){
+                    System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+                }
             }
-            catch(NumberFormatException e){
-                System.out.println("Invalid input!! Please enter an integer value for employee ID,");
+            for(Employee emp:payrollSystem.employee_list){
+                if(emp.getId()==empId){
+                    idExists=true;
+                    System.out.println("Employee with ID " + empId + " already exists. \nPlease enter different ID.");
+                    break;
+                }
             }
-        }
+        }while(idExists);
         System.out.println("Enter hours worked: ");
         int hoursWorked=scanner.nextInt();
         System.out.println("Enter hourly rate: ");
