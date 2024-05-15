@@ -22,6 +22,9 @@ abstract class Employee{
     public String getName(){
         return name;
     }
+    public void setName(String name){
+        this.name=name;
+    }
 
     public int getId(){
         return id;
@@ -29,6 +32,9 @@ abstract class Employee{
 
     public String getEmpStatus(){
         return employementStatus;
+    }
+    public void setEmploymentStatus(String employmentStatus){
+        this.employementStatus=employmentStatus;
     }
 
     public abstract double calculateSalary();
@@ -47,6 +53,12 @@ class FullTimeEmployee extends Employee{
         super(name , id, employementStatus);
         this.monthlySalary=monthlySalary;
     }
+    public double getMonthlySalary(){
+        return monthlySalary;
+    }
+    public void setMonthlySalary(double monthlySalary){
+        this.monthlySalary=monthlySalary;
+    }
 
     @Override
     public double calculateSalary(){
@@ -63,11 +75,25 @@ class PartTimeEmployee extends Employee{
         this.hourlyRate=hourlyRate;
     }
 
+    public int getHoursWorked(){
+        return hoursWorked;
+    }
+    public void setHoursWorked(int hoursWorked){
+        this.hoursWorked=hoursWorked;
+    }
+    public double getHourlyRate(){
+        return hourlyRate;
+    }
+    public void setHourlyRate(double hourlyRate){
+        this.hourlyRate=hourlyRate;
+    }
+
     @Override
     public double calculateSalary(){
         return hoursWorked*hourlyRate;
     }
 }
+
 
 class PayrollSystem{
     private static final String FILE_PATH = "employees.txt";
@@ -87,7 +113,7 @@ class PayrollSystem{
                 if(data.length==5){
                     if (data[0].equals("FullTime")){
                         employee_list.add(new FullTimeEmployee(data[1], Integer.parseInt(data[2]), Double.parseDouble(data[3]), data[4]));
-                    }else if(data[0].equals("PartTime")){
+                    } else if(data[0].equals("PartTime")){
                         employee_list.add(new PartTimeEmployee(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), Double.parseDouble(data[4]), data[5]));
                     }
                 }
@@ -96,18 +122,18 @@ class PayrollSystem{
             e.printStackTrace();
         }
     }
-    
+
     //save employees to file
     private void saveEmployeesToFile(){
         try(BufferedWriter bw= new BufferedWriter(new FileWriter(FILE_PATH))){
             for(Employee employee : employee_list){
                 if(employee instanceof FullTimeEmployee){
                     FullTimeEmployee fullTimeEmployee=(FullTimeEmployee) employee;
-                    bw.write(String.format("FullTime: %s,%d,%.2f,%s\n", fullTimeEmployee.getName(), fullTimeEmployee.getId(), fullTimeEmployee.calculateSalary(), fullTimeEmployee.getEmpStatus()));
+                    bw.write(String.format("FullTime,%s,%d,%.2f,%s\n", fullTimeEmployee.getName(), fullTimeEmployee.getId(), fullTimeEmployee.calculateSalary(), fullTimeEmployee.getEmpStatus()));
                 }
                 else if(employee instanceof PartTimeEmployee){
                     PartTimeEmployee partTimeEmployee = (PartTimeEmployee) employee;
-                    bw.write(String.format("PartTime: %s,%d,%d,%.2f,%s\n", partTimeEmployee.getName(), partTimeEmployee.getId(), partTimeEmployee.calculateSalary(), partTimeEmployee.getEmpStatus()));
+                    bw.write(String.format("PartTime,%s,%d,%d,%.2f,%s\n", partTimeEmployee.getName(), partTimeEmployee.getId(), partTimeEmployee.calculateSalary(), partTimeEmployee.getEmpStatus()));
                 }
             }
         }catch(IOException e){
@@ -137,35 +163,82 @@ class PayrollSystem{
         }
 
         }
+    
+    public void updateEmployee(int id, Scanner scanner){
+            Employee employeeToUpdate=null;
+            for(Employee employee : employee_list){
+                if(employee.getId()==id){
+                    employeeToUpdate=employee;
+                    break;
+                }
+            }
+            if(employeeToUpdate!=null){
+                System.out.println("Current information for employee: ");
+                System.out.println(employeeToUpdate.toString());
+
+                System.out.println("Enter updated information: ");
+                scanner.nextLine();
+                System.out.println("Enter new name: ");
+                String newName= scanner.nextLine();
+                
+                employeeToUpdate.setName(newName);
+
+                System.out.println("Enter new employement status: ");
+                String newEmploymentStatus=scanner.nextLine();
+                employeeToUpdate.setEmploymentStatus(newEmploymentStatus);
+                if (employeeToUpdate instanceof FullTimeEmployee) {
+                    System.out.println("Enter new monthly salary: ");
+                    double newMonthlySalary = scanner.nextDouble();
+                    ((FullTimeEmployee) employeeToUpdate).setMonthlySalary(newMonthlySalary);
+                } else if (employeeToUpdate instanceof PartTimeEmployee) {
+                    System.out.println("Enter new hours worked: ");
+                    int newHoursWorked = scanner.nextInt();
+                    ((PartTimeEmployee) employeeToUpdate).setHoursWorked(newHoursWorked);
+    
+                    System.out.println("Enter new hourly rate: ");
+                    double newHourlyRate = scanner.nextDouble();
+                    ((PartTimeEmployee) employeeToUpdate).setHourlyRate(newHourlyRate);
+                }
+    
+                saveEmployeesToFile();
+    
+                System.out.println("Employee information updated successfully.");
+            } 
+            else{
+                System.out.println("Employee with ID: " + id + " not found.");
+            }
+
+            }
         
-        public void displayEmployees() {
-            int nameWidth = 10; // Minimum width for name column
-            int idWidth = 10; // Minimum width for ID column
-            int salaryWidth = 10; // Minimum width for salary column
-            int statusWidth = 20; // Minimum width for status column
+        
+    public void displayEmployees() {
+    int nameWidth = 10; // Minimum width for name column
+    int idWidth = 10; // Minimum width for ID column
+    int salaryWidth = 10; // Minimum width for salary column
+    int statusWidth = 20; // Minimum width for status column
             
-            // Calculate maximum width for each column based on employee data
-            for (Employee employee : employee_list) {
-                nameWidth = Math.max(nameWidth, employee.getName().length());
-                idWidth = Math.max(idWidth, String.valueOf(employee.getId()).length());
-                salaryWidth = Math.max(salaryWidth, String.valueOf(employee.calculateSalary()).length());
-                statusWidth = Math.max(statusWidth, employee.getEmpStatus().length());
-            }
+    // Calculate maximum width for each column based on employee data
+    for (Employee employee : employee_list) {
+        nameWidth = Math.max(nameWidth, employee.getName().length());
+        idWidth = Math.max(idWidth, String.valueOf(employee.getId()).length());
+        salaryWidth = Math.max(salaryWidth, String.valueOf(employee.calculateSalary()).length());
+        statusWidth = Math.max(statusWidth, employee.getEmpStatus().length());
+    }
         
-            // Print table header
-            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
-            System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"s | %-"+salaryWidth+"s | %-"+statusWidth+"s |\n", "Name", "ID", "Salary", "Employment Status");
-            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
+    // Print table header
+    System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
+    System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"s | %-"+salaryWidth+"s | %-"+statusWidth+"s |\n", "Name", "ID", "Salary", "Employment Status");
+    System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
         
-            // Print employee data
-            for (Employee employee : employee_list) {
-                System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"d | %-"+salaryWidth+".2f | %-"+statusWidth+"s |\n", employee.getName(), employee.getId(), employee.calculateSalary(), employee.getEmpStatus());
-            }
+    // Print employee data
+    for (Employee employee : employee_list) {
+        System.out.printf("| %-"+nameWidth+"s | %-"+idWidth+"d | %-"+salaryWidth+".2f | %-"+statusWidth+"s |\n", employee.getName(), employee.getId(), employee.calculateSalary(), employee.getEmpStatus());
+    }
         
-            // Print bottom border
-            System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
-        }
-        
+    // Print bottom border
+    System.out.println("+-" + "-".repeat(nameWidth) + "-+-" + "-".repeat(idWidth) + "-+-" + "-".repeat(salaryWidth) + "-+-" + "-".repeat(statusWidth) + "-+");
+}
+
 }
  
 
@@ -175,7 +248,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int choice;
         do{
-            System.out.println("Enter your choice:\n1. Add full time employee. \n2. Add part time Employee \n3. Remove employee \n4. Display Employee \n5. Exit");
+            System.out.println("Enter your choice:\n1. Add full time employee. \n2. Add part time Employee \n3. Remove employee \n4. Update Employee \n5. Display Employee \n6. Exit");
             choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -197,11 +270,15 @@ public class Main {
                     break;
 
                 case 4:
+                    System.out.println("Enter employee id to update the information: ");
+                    int idToUpdate=scanner.nextInt();
+                    payrollSystem.updateEmployee(idToUpdate, scanner);
+                case 5:
                     System.out.println("Employees: ");
                     payrollSystem.displayEmployees();
                     break;
                 
-                case 5:
+                case 6:
                     System.out.println("Exiting....");
                     break;
 
@@ -210,7 +287,7 @@ public class Main {
                 
             }
         }
-        while(choice!=5);
+        while(choice!=6);
     }
 
     public static FullTimeEmployee geFullTimeEmployee(Scanner scanner, PayrollSystem payrollSystem){
