@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -65,14 +70,54 @@ class PartTimeEmployee extends Employee{
 }
 
 class PayrollSystem{
+    private static final String FILE_PATH = "employees.txt";
     public ArrayList<Employee> employee_list;
 
     public PayrollSystem(){
         employee_list=new ArrayList<>();
+        loadEmployeesFromFile();
+    }
+
+    //load employee data from file
+    private void loadEmployeesFromFile(){
+        try(BufferedReader br = new BufferedReader(new FileReader(FILE_PATH))){
+            String line;
+            while((line = br.readLine())!=null){
+                String[] data=line.split(",");
+                if(data.length==5){
+                    if (data[0].equals("FullTime")){
+                        employee_list.add(new FullTimeEmployee(data[1], Integer.parseInt(data[2]), Double.parseDouble(data[3]), data[4]));
+                    }else if(data[0].equals("PartTime")){
+                        employee_list.add(new PartTimeEmployee(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), Double.parseDouble(data[4]), data[5]));
+                    }
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    //save employees to file
+    private void saveEmployeesToFile(){
+        try(BufferedWriter bw= new BufferedWriter(new FileWriter(FILE_PATH))){
+            for(Employee employee : employee_list){
+                if(employee instanceof FullTimeEmployee){
+                    FullTimeEmployee fullTimeEmployee=(FullTimeEmployee) employee;
+                    bw.write(String.format("FullTime: %s,%d,%.2f,%s\n", fullTimeEmployee.getName(), fullTimeEmployee.getId(), fullTimeEmployee.calculateSalary(), fullTimeEmployee.getEmpStatus()));
+                }
+                else if(employee instanceof PartTimeEmployee){
+                    PartTimeEmployee partTimeEmployee = (PartTimeEmployee) employee;
+                    bw.write(String.format("PartTime: %s,%d,%d,%.2f,%s\n", partTimeEmployee.getName(), partTimeEmployee.getId(), partTimeEmployee.calculateSalary(), partTimeEmployee.getEmpStatus()));
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void AddEmployee(Employee employee){
         employee_list.add(employee);
+        saveEmployeesToFile();
         System.out.println("Employee added successfully.");
     }
 
@@ -87,11 +132,12 @@ class PayrollSystem{
 
         if (employeeToRemove != null){
             employee_list.remove(employeeToRemove);
+            saveEmployeesToFile();
+            System.out.println("Employee removed successfully.");
         }
 
         }
         
-
         public void displayEmployees() {
             int nameWidth = 10; // Minimum width for name column
             int idWidth = 10; // Minimum width for ID column
@@ -273,6 +319,3 @@ public class Main {
         return new PartTimeEmployee(empName, empId, hoursWorked, hourlyRate, empStatus);
     }
 }
-
-
-
