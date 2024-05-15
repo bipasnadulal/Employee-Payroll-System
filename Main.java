@@ -168,8 +168,18 @@ public class Main {
     }
 
     public static FullTimeEmployee geFullTimeEmployee(Scanner scanner, PayrollSystem payrollSystem){
-        System.out.println("Enter employee name: ");
-        String empName=scanner.nextLine();
+        String empStatus;
+        String empName;
+        //validate employee name
+        while (true) {
+            System.out.println("Enter employee name: ");
+            empName = scanner.nextLine();
+            if (empName.matches("[a-zA-Z\\s]+")) {  
+                break;
+            } else {
+                System.out.println("Invalid input!!\nEmployee name must be valid.");
+            }
+        }
         int empId;
         boolean idExists;
         do{
@@ -196,15 +206,32 @@ public class Main {
         System.out.println("Enter employee monthly salary: ");
         double monthlySalary=scanner.nextDouble();
         scanner.nextLine();
-        System.out.println("Enter employement status of employee: ");
-        String empStatus=scanner.nextLine();
-    
+        while (true) {
+            System.out.println("Enter employment status of employee: ");
+            empStatus = scanner.nextLine();
+            if (empStatus.matches("(?i)full[-\\s]?time")) {  
+                break;
+            } else {
+                System.out.println("Invalid input!!\nEmployment status doesnot match with the option chosen.");
+            }
+        }
         return new FullTimeEmployee(empName, empId, monthlySalary, empStatus);
     }
     
     public static PartTimeEmployee getPartTimeEmployee(Scanner scanner, PayrollSystem payrollSystem){
-        System.out.println("Enter employee name: ");
-        String empName=scanner.nextLine();
+        String empName;
+        String empStatus;
+        //validate employee name
+        while (true) {
+            System.out.println("Enter employee name: ");
+            empName = scanner.nextLine();
+            if (empName.matches("[a-zA-Z\\s]+")) {  
+                break;
+            } else {
+                System.out.println("Invalid input!!\nEmployee name must be valid.");
+            }
+        }
+        
         int empId;
         boolean idExists;
         do{
@@ -232,8 +259,16 @@ public class Main {
         System.out.println("Enter hourly rate: ");
         double hourlyRate=scanner.nextDouble();
         scanner.nextLine();
-        System.out.println("Enter employement status of employee: ");
-        String empStatus=scanner.nextLine();
+        while(true){
+            System.out.println("Enter employment status of employee: ");
+            empStatus=scanner.nextLine();
+            if(empStatus.matches("(?i)part[-\\s]?time")){
+                break;
+            }
+            else{
+                System.out.println("Invalid Input!!\nEmployment status doesnot match with the option chosen.");
+            }
+        }
     
         return new PartTimeEmployee(empName, empId, hoursWorked, hourlyRate, empStatus);
     }
