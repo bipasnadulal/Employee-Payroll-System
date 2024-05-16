@@ -1,1 +1,2 @@
-FullTime,ram shrestha,1,56000.00,full time
+FullTime,Ram Dangi,1,56000.00,full-time
+PartTime,Asmi Shahi,2,4400.00,part-time
